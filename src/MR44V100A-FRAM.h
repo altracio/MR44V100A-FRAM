@@ -1,8 +1,8 @@
-#ifndef __MB85RC256V_FRAM_RK
-#define __MB85RC256V_FRAM_RK
+#ifndef MR44V100A_FRAM_H
+#define MR44V100A_FRAM_H
 
 
-class MB85RC256V {
+class MR44V100A {
 public:
 	/**
 	 * You typically create one of these objects as a global variable
@@ -11,8 +11,8 @@ public:
 	 *
 	 * The addr argument is the address 0-7 based on the setting of A0, A1 and A2.
 	 */
-	MB85RC256V(TwoWire &wire, int addr = 0);
-	virtual ~MB85RC256V();
+	MR44V100A(int addr = 0);
+	virtual ~MR44V100A();
 
 	/**
 	 * Typically called during setup() to start the Wire interface.
@@ -37,12 +37,11 @@ public:
 	bool writeData(size_t framAddr, const uint8_t *data, size_t dataLen);
 
 	static const uint8_t DEVICE_ADDR = 0b1010000;
-	static const size_t MEMORY_SIZE = 32768;
+	static const size_t MEMORY_SIZE = 131072;
 
 protected:
-	TwoWire &wire;
 	int addr; // This is just 0-7, the (0b1010000 of the 7-bit address is ORed in later)
 
 };
 
-#endif /* __MB85RC256V_FRAM_RK */
+#endif /* MR44V100A_FRAM */

@@ -1,24 +1,37 @@
 #include "Particle.h"
-#include "MB85RC256V-FRAM-RK.h"
+#include "MR44V100A-FRAM.h"
 
-MB85RC256V fram(Wire, 0);
+SYSTEM_MODE(MANUAL);
+SYSTEM_THREAD(DISABLED);
+
+MR44V100A fram(0);
 
 void runTest();
 
-const unsigned long TEST_PERIOD_MS = 5000;
+const unsigned long TEST_PERIOD_MS = 100;
 unsigned long lastTest = 0;
 
 void setup() {
-	Serial.begin(9600);
+	Serial.begin(115200);								// open serial over USB
+	while (!Serial.available()) {} // wait for Host to open serial port
 
+	Serial.printlnf("System version: %s", System.version().c_str());
+
+	if (!Wire.isEnabled())
+	{
+		Wire.setSpeed(CLOCK_SPEED_100KHZ);
+		Wire.begin();
+	}
 	fram.begin();
 	// fram.erase();
 }
 
 void loop() {
 	if (millis() - lastTest >= TEST_PERIOD_MS) {
+		Serial.printlnf("begin %lu, %lu", millis(), lastTest);
 		lastTest = millis();
 		runTest();
+		Serial.printlnf("end %lu, %lu", millis(), lastTest);
 	}
 }
 // This is just a list of 16 fish names from Wikipedia for testing
@@ -36,10 +49,10 @@ typedef struct {
 
 void runTest() {
 	// Low-level
-	uint32_t d1;
+	uint32_t d1 = 0;
 	fram.readData(0, (uint8_t *)&d1, sizeof(d1));
-	Serial.printlnf("d1=%u", d1);
 
+	Serial.printlnf("d1=%u", d1);
 	d1++;
 	fram.writeData(0, (const uint8_t *)&d1, sizeof(d1));
 
@@ -115,5 +128,5 @@ void runTest() {
 
 		addr += sizeof(data);
 	}
-	Serial.println("--------");
+	Serial.println("\n--------\n\n");
 }
