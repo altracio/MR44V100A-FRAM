@@ -6,14 +6,18 @@ SYSTEM_THREAD(DISABLED);
 
 MR44V100A fram(0);
 
+PMIC pmic;
+
 void runTest();
 
-const unsigned long TEST_PERIOD_MS = 100;
+const unsigned long TEST_PERIOD_MS = 500;
 unsigned long lastTest = 0;
 
 void setup() {
 	Serial.begin(115200);								// open serial over USB
 	while (!Serial.available()) {} // wait for Host to open serial port
+
+	pmic.begin();
 
 	Serial.printlnf("System version: %s", System.version().c_str());
 
@@ -28,8 +32,10 @@ void setup() {
 
 void loop() {
 	if (millis() - lastTest >= TEST_PERIOD_MS) {
-		Serial.printlnf("begin %lu, %lu", millis(), lastTest);
+		Serial.printlnf("begin %lu, %lu; pmic: %u, %u", millis(), lastTest, pmic.getSystemStatus(), pmic.getFault());
 		lastTest = millis();
+		Wire.end();
+		Wire.begin();
 		runTest();
 		Serial.printlnf("end %lu, %lu", millis(), lastTest);
 	}
