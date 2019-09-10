@@ -2,7 +2,7 @@
 #include "MR44V100A-FRAM.h"
 
 SYSTEM_MODE(MANUAL);
-SYSTEM_THREAD(DISABLED);
+SYSTEM_THREAD(ENABLED);
 
 MR44V100A fram(0);
 
@@ -23,7 +23,7 @@ void setup() {
 
 	if (!Wire.isEnabled())
 	{
-		Wire.setSpeed(CLOCK_SPEED_100KHZ);
+		Wire.setSpeed(CLOCK_SPEED_400KHZ);
 		Wire.begin();
 	}
 	fram.begin();
@@ -50,6 +50,7 @@ typedef struct {
 	int a;
 	float b;
 	bool c;
+	uint32_t d[50];
 } SimpleStruct;
 
 
@@ -125,11 +126,23 @@ void runTest() {
 		// You can even store a small structure of values
 		fram.get(addr, data);
 		Serial.printlnf("addr=%d, a=%d b=%f c=%d, sizeof(data)=%d", addr, data.a, data.b, data.c, sizeof(data));
+		Serial.print("	"); 
+		for (size_t i = 0; i < 50; i++)
+		{
+			Serial.print(data.d[i]);
+			Serial.print(" ");
+		}
+		Serial.println();
 
 		data.a += 2;
 		data.b += 0.02;
 		data.c = !data.c;
 
+		for (size_t i = 0; i < 50; i++)
+		{
+			data.d[i] = (i + data.a) * 5000;
+		}
+		
 		fram.put(addr, data);
 
 		addr += sizeof(data);
