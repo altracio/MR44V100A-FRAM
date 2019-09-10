@@ -53,20 +53,20 @@ bool MR44V100A::readData(size_t framAddr, uint8_t *data, size_t dataLen)
 			break;
 		}
 
-		uint8_t bytesToRead = dataLen;
+		size_t bytesToRead = dataLen;
 		if (bytesToRead > 32)
 		{
 			bytesToRead = 32;
 		}
 
-		Wire.requestFrom((uint8_t)(addr | DEVICE_ADDR | (framAddr >> 16 & 0x1)), bytesToRead, true);
+		Wire.requestFrom((uint8_t)(addr | DEVICE_ADDR | (framAddr >> 16 & 0x1)), (uint8_t)bytesToRead, true);
 		if (Wire.available() < (int)bytesToRead)
 		{
 			result = false;
 			break;
 		}
 
-		for (uint8_t ii = 0; ii < bytesToRead; ii++)
+		for (size_t ii = 0; ii < bytesToRead; ii++)
 		{
 			*data++ = Wire.read(); // receive a byte as character
 			framAddr++;
